@@ -30,6 +30,7 @@ class App extends React.Component {
     return (
       <div>
         <h1>Bowling</h1>
+        <h2>Number of Pins Hit on Bowl: {this.state.pinsToHit}</h2>
         <PinSelector handleButtonClick={this.updatePinsToHit}/>
     </div>
     )
