@@ -1,24 +1,32 @@
 import React from 'react';
 import axios from 'axios';
 import PinSelector from './PinSelector.jsx';
+import Scoreboard from './Scoreboard.jsx';
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      pinsToHit: 0
+      pinsToHit: 0,
+      currentFrame: 0,
+      score: [
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 2},
+        {total: 0, pinsRemaining: 10, strike: false, spare: false, turnsRemaining: 3}
+      ]
     }
     this.updatePinsToHit = this.updatePinsToHit.bind(this);
+    this.bowl = this.bowl.bind(this);
   }
 
   componentDidMount() {
-    axios.get('/api')
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
   }
 
   updatePinsToHit(event) {
@@ -26,12 +34,60 @@ class App extends React.Component {
     this.setState({pinsToHit: pinsToHit});
   }
 
+  bowl() {
+    let currentFrame = this.state.currentFrame;
+
+    // make a shallow copy of the score
+    let score = [...this.state.score];
+    // make a shallow copy of the frame
+    let frame = {...score[currentFrame]};
+
+    //take the turn
+    frame.turnsRemaining--;
+    // Calculate pinsRemaining and score added.
+    const start = this.state.score[currentFrame].pinsRemaining;
+    let pinsRemaining = this.state.score[currentFrame].pinsRemaining - this.state.pinsToHit;
+    // never let pinsRemaining go below 0
+    if (pinsRemaining < 0) {pinsRemaining = 0};
+
+    //calculate base points
+    let pointsEarned = start - pinsRemaining;
+
+    const total = this.state.score[currentFrame].total + pointsEarned;
+
+    // add values to new frame
+    frame.pinsRemaining = pinsRemaining;
+    frame.total = total;
+
+    console.log(`Turns remaining: ${frame.turnsRemaining}`);
+
+    // put frame back into array
+    score[currentFrame] = frame;
+
+    //advance frame if remaining turns is 0
+    //TODO OR if strike
+    if (frame.turnsRemaining === 0) {currentFrame++}
+
+    this.setState({
+      score: score,
+      currentFrame: currentFrame
+    })
+  }
+
   render () {
     return (
       <div>
-        <h1>Bowling</h1>
-        <h2>Number of Pins Hit on Bowl: {this.state.pinsToHit}</h2>
-        <PinSelector handleButtonClick={this.updatePinsToHit}/>
+        <div>
+          <h1>Bowling</h1>
+          <Scoreboard score={this.state.score}/>
+        </div>
+        <div>
+          <h4>Pins Hit on Bowl: {this.state.pinsToHit}</h4>
+          <PinSelector handleButtonClick={this.updatePinsToHit}/>
+        </div>
+        <div>
+          <button onClick={this.bowl}>BOWL</button>
+        </div>
     </div>
     )
   }
