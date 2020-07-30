@@ -9,7 +9,6 @@ class PinSelector extends React.Component {
   render() {
     return(
       <div>
-        <h2>Select Number of Pins</h2>
         <div>
           <div>
             <button onClick={this.props.handleButtonClick} value={1}>1</button>
