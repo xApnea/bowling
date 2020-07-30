@@ -53,6 +53,17 @@ class App extends React.Component {
     //calculate base points
     let pointsEarned = start - pinsRemaining;
 
+    //if zero, check for strikes or spare using turnsRemaining
+    if (pinsRemaining === 0 && frame.turnsRemaining === 1) {
+      //STRIKE
+      frame.strike = true;
+      frame.turnsRemaining--;
+      console.log('STRIKE');
+    } else if (pinsRemaining === 0 && frame.turnsRemaining === 0) {
+      frame.spare = true;
+      console.log('SPARE');
+    }
+
     const total = this.state.score[currentFrame].total + pointsEarned;
 
     // add values to new frame
